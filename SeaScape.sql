@@ -70,3 +70,4 @@ CREATE TABLE ReservationSchedule (
         REFERENCES Users (user_id)
 );
 ALTER TABLE Room ADD CONSTRAINT UQ_room_id UNIQUE (room_id);
+ALTER TABLE Room ADD synopsis VARCHAR2(200);
