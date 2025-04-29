@@ -62,3 +62,5 @@ CREATE TABLE ReservationSchedule (
     CONSTRAINT FK_Resv_Room FOREIGN KEY (room_id) REFERENCES Room(room_id),
     CONSTRAINT FK_Resv_User FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
+ALTER TABLE Room ADD CONSTRAINT UQ_room_id UNIQUE (room_id);
+
