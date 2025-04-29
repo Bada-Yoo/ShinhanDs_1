@@ -18,5 +18,7 @@ public class RoomDTO {
 	private int PRICE;          
 	private int LIMIT_TIME;     
 	private String STORE_UNIQUE_ID;
-	private String SYNOPSIS;       
+	private String SYNOPSIS;    
+	private String HOPE_STORE;
+	private String STORE_STATUS;
 }

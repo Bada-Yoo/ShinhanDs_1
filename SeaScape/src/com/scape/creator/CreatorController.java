@@ -1,13 +1,149 @@
 package com.scape.creator;
 
+import java.util.Scanner;
 import com.scape.activate.ActivateControllerInterface;
 
 public class CreatorController implements ActivateControllerInterface {
 
-	@Override
-	public void execute() {
-		// TODO Auto-generated method stub
+    Scanner sc = new Scanner(System.in);
+    CreatorService service = new CreatorService();
+    private String loginId = null;  // 로그인된 개발자 ID 저장
 
-	}
+    @Override
+    public void execute() {
+        while (true) {
+            System.out.println("1. 개발자 등록(회원가입) 2. 개발자 로그인 0. 나가기");
+            int job = sc.nextInt();
+            sc.nextLine(); // 버퍼 비우기
 
+            switch (job) {
+                case 1 -> register();
+                case 2 -> login();
+                case 0 -> { return; }
+                default -> CreatorView.display("잘못된 입력입니다.");
+            }
+        }
+    }
+
+    private void register() {
+        System.out.println("==== 개발자 등록 ====");
+        System.out.print("ID 입력: ");
+        String id = sc.nextLine();
+        System.out.print("비밀번호 입력: ");
+        String pw = sc.nextLine();
+        System.out.print("닉네임 입력: ");
+        String nickname = sc.nextLine();
+
+        CreatorDTO creator = CreatorDTO.builder()
+                .CREATOR_ID(id)
+                .CREATOR_PW(pw)
+                .CREATOR_NICKNAME(nickname)
+                .build();
+
+        String message = service.registerCreator(creator);
+        CreatorView.display(message);
+    }
+
+    private void login() {
+        System.out.println("==== 개발자 로그인 ====");
+        System.out.print("ID 입력: ");
+        String id = sc.nextLine();
+        System.out.print("비밀번호 입력: ");
+        String pw = sc.nextLine();
+
+        boolean success = service.loginCreator(id, pw);
+        if (success) {
+            loginId = id;
+            CreatorView.display("로그인 성공했습니다!");
+            creatorMenu();
+        } else {
+            CreatorView.display("로그인 실패! ID 또는 PW를 확인하세요.");
+        }
+    }
+
+    private void creatorMenu() {
+        while (true) {
+            System.out.println("=== 개발자 메뉴 ===");
+            System.out.println("1. 내가 만든 방 리스트 보기 2. 방 생성하기 3. 방 삭제하기 4. 매장에 방 배정 요청하기 5. 로그아웃");
+            int menu = sc.nextInt();
+            sc.nextLine();
+
+            switch (menu) {
+                case 1 -> viewMyRooms();
+                case 2 -> createRoom();
+                case 3 -> deleteRoom();
+                case 4 -> requestRoomAssignment();
+                case 5 -> {
+                    logout();
+                    return;
+                }
+                default -> CreatorView.display("잘못된 입력입니다.");
+            }
+        }
+    }
+
+    private void viewMyRooms() {
+        List<RoomDTO> rooms = roomService.getRoomsByCreator(loginId);
+        CreatorView.displayRooms(rooms);
+    }
+
+    private void createRoom() {
+        System.out.println("=== 방 생성 ===");
+        System.out.print("방 이름 입력: ");
+        String roomName = sc.nextLine();
+        System.out.print("장르 입력: ");
+        String genre = sc.nextLine();
+        System.out.print("19금인가요? (1:예 / 0:아니오): ");
+        int is19 = sc.nextInt();
+        System.out.print("가격 입력: ");
+        int price = sc.nextInt();
+        System.out.print("제한 시간 입력(분): ");
+        int limitTime = sc.nextInt();
+        sc.nextLine(); // 버퍼 비우기
+        System.out.print("방 소개글 입력: ");
+        String synopsis = sc.nextLine();
+
+        String roomId = loginId + "_" + System.currentTimeMillis();
+
+        RoomDTO room = RoomDTO.builder()
+                .ROOM_ID(roomId)
+                .CREATOR_ID(loginId)
+                .ROOM_NAME(roomName)
+                .GENRE(genre)
+                .IS19(is19)
+                .PRICE(price)
+                .LIMIT_TIME(limitTime)
+                .SYNOPSIS(synopsis)
+                .STORE_UNIQUE_ID(null)
+                .HOPE_STORE("0")
+                .STORE_STATUS("0")
+                .build();
+
+        boolean isSuccess = roomService.createRoom(room);
+        CreatorView.display(isSuccess ? "방이 성공적으로 생성되었습니다." : "방 생성에 실패했습니다.");
+    }
+
+    private void deleteRoom() {
+        System.out.print("삭제할 방 ID 입력: ");
+        String roomId = sc.nextLine();
+
+        boolean isSuccess = roomService.deleteRoom(roomId, loginId);
+        CreatorView.display(isSuccess ? "방 삭제 완료" : "삭제 실패 또는 권한 없음");
+    }
+
+    private void requestRoomAssignment() {
+        System.out.print("배정 요청할 방 ID 입력: ");
+        String roomId = sc.nextLine();
+        System.out.print("희망 매장명 입력: ");
+        String hopeStore = sc.nextLine();
+
+        boolean isSuccess = roomService.requestAssignment(roomId, loginId, hopeStore);
+        CreatorView.display(isSuccess ? "배정 요청 완료" : "요청 실패 (방 없음 또는 권한 없음)");
+    }
+
+
+    private void logout() {
+        CreatorView.display("로그아웃합니다.");
+        loginId = null;
+    }
 }
