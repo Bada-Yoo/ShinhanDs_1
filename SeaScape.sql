@@ -71,3 +71,4 @@ CREATE TABLE ReservationSchedule (
 );
 ALTER TABLE Room ADD CONSTRAINT UQ_room_id UNIQUE (room_id);
 ALTER TABLE Room ADD synopsis VARCHAR2(200);
+ALTER TABLE Room MODIFY store_unique_id VARCHAR2(50);
