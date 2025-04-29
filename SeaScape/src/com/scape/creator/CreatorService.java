@@ -1,16 +1,13 @@
 package com.scape.creator;
 
 import java.util.List;
-import java.util.Scanner;
 
-import com.scape.room.RoomDAO;
 import com.scape.room.RoomDTO;
 import com.scape.room.RoomService;
 
 public class CreatorService {
     private final CreatorDAO creatorDao = new CreatorDAO();
     private final RoomService roomService = new RoomService();
-    private final Scanner sc = new Scanner(System.in);
 
     public String registerCreator(CreatorDTO creator) {
         boolean isSuccess = creatorDao.insertCreator(creator);
@@ -21,19 +18,23 @@ public class CreatorService {
         return creatorDao.checkLogin(id, pw);
     }
 
-    public void viewRooms(String creatorId) {
-        roomService.viewRooms(creatorId);
+    // 방 목록
+    public List<RoomDTO> getMyRooms(String creatorId) {
+        return roomService.getRoomsByCreator(creatorId);
     }
 
-    public void createRoom(String creatorId) {
-        roomService.createRoom(creatorId);
+    // 방 생성
+    public boolean createRoom(RoomDTO room) {
+        return roomService.createRoom(room);
     }
 
-    public void deleteRoom(String creatorId) {
-        roomService.deleteRoom(creatorId);
+    // 방 삭제
+    public boolean deleteRoom(String roomId, String creatorId) {
+        return roomService.deleteRoom(roomId, creatorId);
     }
 
-    public void requestAssignment(String creatorId) {
-        roomService.requestAssignment(creatorId);
+    // 배정 요청
+    public boolean requestAssignment(String roomId, String creatorId, String hopeStore) {
+        return roomService.requestAssignment(roomId, creatorId, hopeStore);
     }
 }

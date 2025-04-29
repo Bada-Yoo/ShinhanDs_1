@@ -15,8 +15,19 @@ public class CreatorView {
         } else {
             System.out.println("==== 내가 만든 방 리스트 ====");
             for (RoomDTO room : rooms) {
-                System.out.println(room);
+                String is19Text = room.getIS_19() == 1 ? "예" : "아니오";
+
+                System.out.printf("방탈출 이름: %s | 장르: %s | 19금: %s | 가격: %d원 | 제한시간: %d분%n",
+                        room.getROOM_NAME(),
+                        room.getGENRE(),
+                        is19Text,
+                        room.getPRICE(),
+                        room.getLIMIT_TIME());
+
+                System.out.println("시놉시스: " + room.getSYNOPSIS());
+                System.out.println("--------------------------------------------------");
             }
         }
     }
+
 }

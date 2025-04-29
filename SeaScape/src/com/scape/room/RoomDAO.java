@@ -17,8 +17,9 @@ public class RoomDAO {
 
     // ✅ 간결한 SQL 상수명
     private static final String INSERT_ROOM =
-        "INSERT INTO room (room_id, creator_id, room_name, genre, is_19, price, limit_time, synopsis) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    	    "INSERT INTO room (creator_id, room_name, genre, is_19, price, limit_time, synopsis, store_unique_id, hope_store, store_status) " +
+    	    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 
     private static final String DELETE_ROOM =
         "DELETE FROM room WHERE room_id = ? AND creator_id = ?";

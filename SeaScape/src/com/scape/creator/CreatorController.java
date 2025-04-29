@@ -1,7 +1,10 @@
 package com.scape.creator;
 
+import java.util.List;
 import java.util.Scanner;
 import com.scape.activate.ActivateControllerInterface;
+import com.scape.room.RoomDTO;
+import com.scape.room.RoomService;
 
 public class CreatorController implements ActivateControllerInterface {
 
@@ -83,7 +86,7 @@ public class CreatorController implements ActivateControllerInterface {
     }
 
     private void viewMyRooms() {
-        List<RoomDTO> rooms = roomService.getRoomsByCreator(loginId);
+        List<RoomDTO> rooms = service.getMyRooms(loginId);
         CreatorView.displayRooms(rooms);
     }
 
@@ -99,18 +102,15 @@ public class CreatorController implements ActivateControllerInterface {
         int price = sc.nextInt();
         System.out.print("제한 시간 입력(분): ");
         int limitTime = sc.nextInt();
-        sc.nextLine(); // 버퍼 비우기
-        System.out.print("방 소개글 입력: ");
+        sc.nextLine();
+        System.out.print("시놉시스 입력: ");
         String synopsis = sc.nextLine();
 
-        String roomId = loginId + "_" + System.currentTimeMillis();
-
         RoomDTO room = RoomDTO.builder()
-                .ROOM_ID(roomId)
-                .CREATOR_ID(loginId)
+                .CREATOR_ID(loginId)           
                 .ROOM_NAME(roomName)
                 .GENRE(genre)
-                .IS19(is19)
+                .IS_19(is19)
                 .PRICE(price)
                 .LIMIT_TIME(limitTime)
                 .SYNOPSIS(synopsis)
@@ -119,16 +119,16 @@ public class CreatorController implements ActivateControllerInterface {
                 .STORE_STATUS("0")
                 .build();
 
-        boolean isSuccess = roomService.createRoom(room);
+        boolean isSuccess = service.createRoom(room);
         CreatorView.display(isSuccess ? "방이 성공적으로 생성되었습니다." : "방 생성에 실패했습니다.");
     }
+
 
     private void deleteRoom() {
         System.out.print("삭제할 방 ID 입력: ");
         String roomId = sc.nextLine();
-
-        boolean isSuccess = roomService.deleteRoom(roomId, loginId);
-        CreatorView.display(isSuccess ? "방 삭제 완료" : "삭제 실패 또는 권한 없음");
+        boolean isSuccess = service.deleteRoom(roomId, loginId);
+        CreatorView.display(isSuccess ? "삭제 성공!" : "삭제 실패 또는 권한 없음");
     }
 
     private void requestRoomAssignment() {
@@ -136,10 +136,10 @@ public class CreatorController implements ActivateControllerInterface {
         String roomId = sc.nextLine();
         System.out.print("희망 매장명 입력: ");
         String hopeStore = sc.nextLine();
-
-        boolean isSuccess = roomService.requestAssignment(roomId, loginId, hopeStore);
-        CreatorView.display(isSuccess ? "배정 요청 완료" : "요청 실패 (방 없음 또는 권한 없음)");
+        boolean isSuccess = service.requestAssignment(roomId, loginId, hopeStore);
+        CreatorView.display(isSuccess ? "배정 요청 완료!" : "요청 실패");
     }
+
 
 
     private void logout() {
