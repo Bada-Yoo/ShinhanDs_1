@@ -18,23 +18,23 @@ public class CreatorService {
         return creatorDao.checkLogin(id, pw);
     }
 
-    // 방 목록
     public List<RoomDTO> getMyRooms(String creatorId) {
         return roomService.getRoomsByCreator(creatorId);
     }
 
-    // 방 생성
     public boolean createRoom(RoomDTO room) {
         return roomService.createRoom(room);
     }
 
-    // 방 삭제
     public boolean deleteRoom(String roomId, String creatorId) {
         return roomService.deleteRoom(roomId, creatorId);
     }
 
-    // 배정 요청
-    public boolean requestAssignment(String roomId, String creatorId, String hopeStore) {
-        return roomService.requestAssignment(roomId, creatorId, hopeStore);
+    public List<RoomDTO> getUnassignedRooms(String creatorId) {
+        return roomService.getUnassignedRooms(creatorId);
+    }
+
+    public boolean requestAssignmentByRoomName(String roomName, String creatorId, String hopeStore) {
+        return roomService.requestAssignment(roomName, creatorId, hopeStore);
     }
 }

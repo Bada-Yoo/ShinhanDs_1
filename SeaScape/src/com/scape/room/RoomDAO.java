@@ -113,6 +113,32 @@ public class RoomDAO {
         }
         return list;
     }
+    
+    //안배정된 방보기
+    public List<RoomDTO> findUnassignedRooms(String creatorId) {
+        List<RoomDTO> list = new ArrayList<>();
+        String sql = "SELECT room_name, genre, synopsis FROM room WHERE creator_id = ? AND store_unique_id IS NULL";
+        conn = DBUtil.getConnection();
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, creatorId);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                RoomDTO room = RoomDTO.builder()
+                        .ROOM_NAME(rs.getString("room_name"))
+                        .GENRE(rs.getString("genre"))
+                        .SYNOPSIS(rs.getString("synopsis"))
+                        .build();
+                list.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.dbDisconnect(conn, pst, rs);
+        }
+        return list;
+    }
 
     // ✅ 배정 요청 업데이트
     public boolean updateRoomRequest(String roomId, String creatorId, String hopeStore) {

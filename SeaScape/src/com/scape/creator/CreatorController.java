@@ -132,13 +132,29 @@ public class CreatorController implements ActivateControllerInterface {
     }
 
     private void requestRoomAssignment() {
-        System.out.print("배정 요청할 방 ID 입력: ");
-        String roomId = sc.nextLine();
+        List<RoomDTO> unassignedRooms = service.getUnassignedRooms(loginId);
+        CreatorView.displayUnassignedRooms(unassignedRooms);
+
+        if (unassignedRooms.isEmpty()) {
+            return; // 방이 없으면 조용히 끝
+        }
+
+        System.out.print("배정 요청할 방 이름 입력: ");
+        String roomName = sc.nextLine();
+
+        List<String> locations = RoomService.getAvailableStoreLocations();
+        System.out.println("=== 현재 등록된 매장 위치 목록 ===");
+        for (String loc : locations) {
+            System.out.println("- " + loc);
+        }
+
         System.out.print("희망 매장명 입력: ");
         String hopeStore = sc.nextLine();
-        boolean isSuccess = service.requestAssignment(roomId, loginId, hopeStore);
-        CreatorView.display(isSuccess ? "배정 요청 완료!" : "요청 실패");
+
+        boolean isSuccess = service.requestAssignmentByRoomName(roomName, loginId, hopeStore);
+        CreatorView.display(isSuccess ? "배정 요청 완료!" : "요청 실패 (방 없음 또는 권한 없음)");
     }
+
 
 
 

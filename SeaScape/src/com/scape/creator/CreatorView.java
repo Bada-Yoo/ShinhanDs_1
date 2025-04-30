@@ -9,6 +9,19 @@ public class CreatorView {
         System.out.println("[개발자 알림] " + message);
     }
 
+    public static void displayUnassignedRooms(List<RoomDTO> rooms) {
+        if (rooms == null || rooms.isEmpty()) {
+            System.out.println("배정 요청 가능한 방이 없습니다.");
+        } else {
+            System.out.println("=== 매장 배정 요청 가능한 내 방 리스트 ===");
+            for (RoomDTO room : rooms) {
+                System.out.println("- 방 이름: " + room.getROOM_NAME()
+                                 + " | 장르: " + room.getGENRE()
+                                 + " | 시놉시스: " + room.getSYNOPSIS());
+            }
+        }
+    }	
+    
     public static void displayRooms(List<RoomDTO> rooms) {
         if (rooms == null || rooms.isEmpty()) {
             System.out.println("등록된 방이 없습니다.");
