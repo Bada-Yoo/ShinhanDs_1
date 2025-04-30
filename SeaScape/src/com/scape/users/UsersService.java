@@ -29,6 +29,11 @@ public class UsersService {
         // 예약 관련 로직
         return "예약 기능은 아직 준비중입니다.";
     }
+    
+    public int getUserAge(String userId) {
+        return usersDao.findAgeById(userId);
+    }
+
 
     // 예약취소
     public String cancelReservation() {

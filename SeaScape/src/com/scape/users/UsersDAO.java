@@ -84,5 +84,25 @@ public class UsersDAO {
         }
         return result;
     }
+    
+    //나이찾기
+    public int findAgeById(String userId) {
+        int age = 0;
+        String sql = "SELECT user_age FROM users WHERE user_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, userId);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                age = rs.getInt("user_age");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return age;
+    }
+
 
 }

@@ -125,11 +125,38 @@ public class CreatorController implements ActivateControllerInterface {
 
 
     private void deleteRoom() {
-        System.out.print("삭제할 방 ID 입력: ");
-        String roomId = sc.nextLine();
+        List<RoomDTO> myRooms = service.getMyRooms(loginId);
+
+        if (myRooms.isEmpty()) {
+            CreatorView.display("삭제할 수 있는 방이 없습니다.");
+            return;
+        }
+
+        System.out.println("==== 내가 만든 방 리스트 ====");
+        for (RoomDTO room : myRooms) {
+            System.out.printf("- 방 이름: %s | 장르: %s | 제한시간: %d분\n",
+                    room.getROOM_NAME(), room.getGENRE(), room.getLIMIT_TIME());
+        }
+
+        System.out.print("삭제할 방 이름을 입력하세요: ");
+        String nameToDelete = sc.nextLine();
+
+        // 방 이름으로 room_id 찾기
+        String roomId = myRooms.stream()
+                .filter(r -> r.getROOM_NAME().equals(nameToDelete))
+                .map(RoomDTO::getROOM_ID)
+                .findFirst()
+                .orElse(null);
+
+        if (roomId == null) {
+            CreatorView.display("해당 이름의 방을 찾을 수 없습니다.");
+            return;
+        }
+
         boolean isSuccess = service.deleteRoom(roomId, loginId);
         CreatorView.display(isSuccess ? "삭제 성공!" : "삭제 실패 또는 권한 없음");
     }
+
 
     private void requestRoomAssignment() {
         List<RoomDTO> unassignedRooms = service.getUnassignedRooms(loginId);

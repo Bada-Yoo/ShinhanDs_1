@@ -36,4 +36,21 @@ public class RoomService {
     public List<String> getAvailableStoreLocations() {
         return new StoreDAO().getAllLocations();
     }
+    
+    //bosscontroller에서 사용하는 rjtemf
+    public List<RoomDTO> getPendingRooms() {
+        return roomdao.findRoomsByStatus("대기중");
+    }
+
+    public int getRoomCountInStore(String hopeStore) {
+        return roomdao.countRoomsInStore(hopeStore);
+    }
+
+    public void updateRoomStatus(String roomId, String status) {
+        roomdao.updateStoreStatus(roomId, status);
+    }
+
+    public void approveRoom(String roomId, String storeUniqueId) {
+        roomdao.assignStoreToRoom(roomId, storeUniqueId);
+    }
 }
