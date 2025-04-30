@@ -112,4 +112,53 @@ public class ReservationScheduleDAO {
         }
         return false;
     }
+    
+    //예약조회
+    public List<ReservationScheduleDTO> selectReservationsByUser(String userId) {
+        List<ReservationScheduleDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM reservationschedule WHERE user_id = ? AND is_reserved = 'Y'";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, userId);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                ReservationScheduleDTO dto = ReservationScheduleDTO.builder()
+                    .SCHEDULE_ID(rs.getInt("schedule_id"))
+                    .ROOM_ID(rs.getString("room_id"))
+                    .USER_ID(rs.getString("user_id"))
+                    .RESERVATION_DATE(rs.getDate("reservation_date"))
+                    .RESERVATION_TIME(rs.getString("reservation_time"))
+                    .HEADCOUNT(rs.getInt("headcount"))
+                    .IS_RESERVED(rs.getString("is_reserved"))
+                    .build();
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+    
+    //예약 취소
+    public boolean cancelReservation(int scheduleId) {
+        String sql = "UPDATE reservationschedule SET user_id = NULL, headcount = 0, is_reserved = 'N' WHERE schedule_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, scheduleId);
+            int result = pst.executeUpdate();
+            conn.commit();
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    
 }

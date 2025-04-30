@@ -1,5 +1,6 @@
 package com.scape.ReservationSchedule;
 
+import com.scape.room.RoomDAO;
 import com.scape.room.RoomDTO;
 import java.util.*;
 
@@ -21,8 +22,21 @@ public class ReservationScheduleService {
         return dao.selectScheduleId(roomId, date, time);
     }
 
-    // 4. 실제 예약 처리
+    // 4. 실제 예약 처리 + 취소
     public boolean reserve(int scheduleId, String userId, int headcount) {
         return dao.reserve(scheduleId, userId, headcount);
     }
+    
+    public List<ReservationScheduleDTO> getMyReservations(String userId) {
+        return dao.selectReservationsByUser(userId);
+    }
+
+    public boolean cancelReservation(int scheduleId) {
+        return dao.cancelReservation(scheduleId);
+    }
+
+    public RoomDTO getRoomInfo(String roomId) {
+        return new RoomDAO().findRoomById(roomId);
+    }
+
 }

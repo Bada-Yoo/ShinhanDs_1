@@ -266,5 +266,32 @@ public class RoomDAO {
             DBUtil.dbDisconnect(conn, pst, null);
         }
     }
+    
+    //방찾기
+    public RoomDTO findRoomById(String roomId) {
+        String sql = "SELECT * FROM room WHERE room_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, roomId);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return RoomDTO.builder()
+                    .ROOM_ID(rs.getString("room_id"))
+                    .ROOM_NAME(rs.getString("room_name"))
+                    .GENRE(rs.getString("genre"))
+                    .IS_19(rs.getInt("is_19"))
+                    .PRICE(rs.getInt("price"))
+                    .LIMIT_TIME(rs.getInt("limit_time"))
+                    .SYNOPSIS(rs.getString("synopsis"))
+                    .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
 

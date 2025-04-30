@@ -77,5 +77,22 @@ public class StoreDAO {
 	    }
 	    return id;
 	}
+	
+	public String getLocationByRoomId(String roomId) {
+	    String sql = "SELECT s.location FROM store s JOIN room r ON s.store_unique_id = r.store_unique_id WHERE r.room_id = ?";
+	    try (Connection conn = DBUtil.getConnection();
+	         PreparedStatement pst = conn.prepareStatement(sql)) {
+
+	        pst.setString(1, roomId);
+	        ResultSet rs = pst.executeQuery();
+	        if (rs.next()) {
+	            return rs.getString("location");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return "알 수 없음";
+	}
+
 
 }

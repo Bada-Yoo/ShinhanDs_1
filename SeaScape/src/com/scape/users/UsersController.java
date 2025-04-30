@@ -26,12 +26,13 @@ public class UsersController implements ActivateControllerInterface {
     @Override
     public void execute() {
     	while(true) {
-	        System.out.println("1. 회원가입 2. 로그인");
+	        System.out.println("1. 회원가입 2. 로그인 0. 나가기");
 	        String job = sc.next();
 	
 	        switch (job) {
 	            case "1" -> join();
 	            case "2" -> login();
+	            case "0" -> { return; }
 	            default -> UsersView.display("잘못된 입력입니다.");
         	}
         }
@@ -238,9 +239,54 @@ public class UsersController implements ActivateControllerInterface {
     }
 
     private void cancelReservation() {
-        String message = service.cancelReservation();
-        UsersView.display(message);
+        if (loginId == null) {
+            UsersView.display("로그인이 필요한 기능입니다.");
+            return;
+        }
+
+        List<ReservationScheduleDTO> myReservations = scheduleService.getMyReservations(loginId);
+        if (myReservations.isEmpty()) {
+            UsersView.display("예약 내역이 없습니다.");
+            return;
+        }
+
+        UsersView.display("예약 내역:");
+        for (int i = 0; i < myReservations.size(); i++) {
+            ReservationScheduleDTO r = myReservations.get(i);
+            RoomDTO room = scheduleService.getRoomInfo(r.getROOM_ID());
+            String location = storeService.getLocationByRoomId(r.getROOM_ID());
+            UsersView.display((i + 1) + ". 지점: " + location + " | 테마: " + room.getROOM_NAME() +
+                    " | 날짜: " + r.getRESERVATION_DATE() + " | 시간: " + r.getRESERVATION_TIME());
+        }
+
+        UsersView.display("취소할 예약 번호를 입력하세요:");
+        int index;
+        try {
+            index = Integer.parseInt(sc.nextLine()) - 1;
+            if (index < 0 || index >= myReservations.size()) {
+                UsersView.display("[오류] 잘못된 입력입니다.");
+                return;
+            }
+        } catch (Exception e) {
+            UsersView.display("[오류] 잘못된 입력입니다.");
+            return;
+        }
+
+        ReservationScheduleDTO selected = myReservations.get(index);
+        UsersView.display("환불받을 계좌번호를 입력하세요:");
+        String account = sc.nextLine();
+
+        boolean result = scheduleService.cancelReservation(selected.getSCHEDULE_ID());
+        if (result) {
+            UsersView.display("예약이 취소되었습니다.");
+            UsersView.display("입금 계좌: " + account);
+            int refund = selected.getHEADCOUNT() * scheduleService.getRoomInfo(selected.getROOM_ID()).getPRICE();
+            UsersView.display("총 " + refund + "원이 3일 이내로 환불될 예정입니다.");
+        } else {
+            UsersView.display("[실패] 예약 취소 중 문제가 발생했습니다.");
+        }
     }
+
 
     private boolean deleteAccount() {
         if (loginId == null) {

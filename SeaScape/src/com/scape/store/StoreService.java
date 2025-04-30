@@ -16,5 +16,10 @@ public class StoreService {
     public List<String> getAllLocations() {
         return dao.getAllLocations();
     }
+    
+    public String getLocationByRoomId(String roomId) {
+        return dao.getLocationByRoomId(roomId);
+    }
+
 
 }
