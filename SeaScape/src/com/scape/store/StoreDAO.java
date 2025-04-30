@@ -59,6 +59,7 @@ public class StoreDAO {
         return limit;
     }
 	
+	//매장고유id찾기
 	public String findStoreUniqueIdByLocation(String location) {
 	    String id = null;
 	    String sql = "SELECT store_unique_id FROM store WHERE location = ?";
@@ -78,6 +79,7 @@ public class StoreDAO {
 	    return id;
 	}
 	
+	//매장위치얻기
 	public String getLocationByRoomId(String roomId) {
 	    String sql = "SELECT s.location FROM store s JOIN room r ON s.store_unique_id = r.store_unique_id WHERE r.room_id = ?";
 	    try (Connection conn = DBUtil.getConnection();
@@ -93,6 +95,25 @@ public class StoreDAO {
 	    }
 	    return "알 수 없음";
 	}
+	
+	//매장 로그인
+	public boolean checkStoreLogin(String id, String pw) {
+	    String sql = "SELECT * FROM store WHERE store_id = ? AND store_pw = ?";
+	    try (Connection conn = DBUtil.getConnection();
+	         PreparedStatement pst = conn.prepareStatement(sql)) {
+
+	        pst.setString(1, id);
+	        pst.setString(2, pw);
+	        ResultSet rs = pst.executeQuery();
+
+	        return rs.next(); // 로그인 성공 조건: 레코드 존재
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+
 
 
 }

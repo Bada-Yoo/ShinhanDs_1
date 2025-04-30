@@ -20,6 +20,10 @@ public class StoreService {
     public String getLocationByRoomId(String roomId) {
         return dao.getLocationByRoomId(roomId);
     }
+    public boolean login(String id, String pw) {
+        return dao.checkStoreLogin(id, pw);
+    }
+
 
 
 }

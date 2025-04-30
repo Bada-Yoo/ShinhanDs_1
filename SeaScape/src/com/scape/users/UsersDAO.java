@@ -103,6 +103,22 @@ public class UsersDAO {
         }
         return age;
     }
+    //이름 찾기
+    public String findUserNameById(String userId) {
+        String name = null;
+        String sql = "SELECT user_name FROM users WHERE user_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, userId);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                name = rs.getString("user_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return name != null ? name : "(알 수 없음)";
+    }
 
 
 }

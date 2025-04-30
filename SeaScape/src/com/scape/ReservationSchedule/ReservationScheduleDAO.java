@@ -5,6 +5,7 @@ import com.scape.room.RoomDTO;
 
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationScheduleDAO {
@@ -159,6 +160,72 @@ public class ReservationScheduleDAO {
         }
         return false;
     }
+    
+    //예약조회
+    public List<ReservationScheduleDTO> selectReservationsByStoreAndDate(String storeId, LocalDate start, LocalDate end) {
+        List<ReservationScheduleDTO> list = new ArrayList<>();
+
+        String sql = """
+            SELECT rs.* FROM reservationschedule rs
+            JOIN room r ON rs.room_id = r.room_id
+            JOIN store s ON r.store_unique_id = s.store_unique_id
+            WHERE s.store_id = ? AND rs.reservation_date BETWEEN ? AND ?
+            ORDER BY rs.reservation_date, rs.reservation_time
+        """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, storeId);
+            pst.setDate(2, Date.valueOf(start));
+            pst.setDate(3, Date.valueOf(end));
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                ReservationScheduleDTO dto = ReservationScheduleDTO.builder()
+                    .SCHEDULE_ID(rs.getInt("schedule_id"))
+                    .ROOM_ID(rs.getString("room_id"))
+                    .USER_ID(rs.getString("user_id"))
+                    .RESERVATION_DATE(rs.getDate("reservation_date"))
+                    .RESERVATION_TIME(rs.getString("reservation_time"))
+                    .HEADCOUNT(rs.getInt("headcount"))
+                    .IS_RESERVED(rs.getString("is_reserved"))
+                    .build();
+                list.add(dto);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    //예약취소
+    public boolean deleteReservationsByDateAndStore(String storeId, LocalDate date) {
+        String sql = """
+            DELETE FROM reservationschedule
+            WHERE room_id IN (
+                SELECT r.room_id FROM room r
+                JOIN store s ON r.store_unique_id = s.store_unique_id
+                WHERE s.store_id = ?
+            ) AND reservation_date = ?
+        """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, storeId);
+            pst.setDate(2, Date.valueOf(date));
+            int result = pst.executeUpdate();
+            conn.commit();
+            return result > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     
 }
