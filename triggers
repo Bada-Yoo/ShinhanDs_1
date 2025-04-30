@@ -1,0 +1,168 @@
+-- 시퀀스 생성
+CREATE SEQUENCE reservationschedule_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+
+-- 1주일치 예약 수동 삽입
+BEGIN
+    FOR room_rec IN (
+        SELECT DISTINCT room_id FROM timeslot
+    ) LOOP
+        FOR time_rec IN (
+            SELECT reservation_time FROM timeslot WHERE room_id = room_rec.room_id
+        ) LOOP
+            FOR i IN 0..6 LOOP
+                INSERT INTO reservationschedule (
+                    schedule_id,
+                    room_id,
+                    reservation_date,
+                    reservation_time,
+                    headcount,
+                    is_reserved
+                ) VALUES (
+                    reservationschedule_seq.NEXTVAL,
+                    room_rec.room_id,
+                    TO_DATE(TO_CHAR(TRUNC(SYSDATE) + i, 'YYYY-MM-DD'), 'YYYY-MM-DD'),
+                    time_rec.reservation_time,
+                    0,
+                    'N'
+                );
+            END LOOP;
+        END LOOP;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+-- 다음 날 예약 자동 생성 프로시저
+CREATE OR REPLACE PROCEDURE generate_next_day_reservations IS
+    v_date DATE := TO_DATE(TO_CHAR(TRUNC(SYSDATE) + 7, 'YYYY-MM-DD'), 'YYYY-MM-DD');  
+BEGIN
+    FOR room_rec IN (
+        SELECT DISTINCT room_id FROM timeslot
+    ) LOOP
+        FOR time_rec IN (
+            SELECT reservation_time FROM timeslot WHERE room_id = room_rec.room_id
+        ) LOOP
+            INSERT INTO reservationschedule (
+                schedule_id,
+                room_id,
+                reservation_date,
+                reservation_time,
+                headcount,
+                is_reserved
+            ) VALUES (
+                reservationschedule_seq.NEXTVAL,
+                room_rec.room_id,
+                v_date,
+                time_rec.reservation_time,
+                0,
+                'N'
+            );
+        END LOOP;
+    END LOOP;
+
+    COMMIT;
+END;
+/
+
+-- 매일 00:05에 실행될 스케줄러 등록
+BEGIN
+    DBMS_SCHEDULER.CREATE_JOB (
+        job_name        => 'JOB_GEN_NEXT_DAY',
+        job_type        => 'STORED_PROCEDURE',
+        job_action      => 'generate_next_day_reservations',
+        start_date      => SYSTIMESTAMP,
+        repeat_interval => 'FREQ=DAILY;BYHOUR=0;BYMINUTE=5',
+        enabled         => TRUE
+    );
+END;
+/
+
+-- 전날 예약 삭제 프로시저
+CREATE OR REPLACE PROCEDURE del_prev_resv IS
+BEGIN
+    DELETE FROM reservationschedule
+    WHERE reservation_date = TRUNC(SYSDATE) - 1;
+    COMMIT;
+END;
+/
+
+-- 매일 00:10에 실행될 스케줄러 등록
+BEGIN
+    DBMS_SCHEDULER.CREATE_JOB (
+        job_name        => 'JOB_DEL_PREV_RESV',
+        job_type        => 'STORED_PROCEDURE',
+        job_action      => 'del_prev_resv',
+        start_date      => SYSTIMESTAMP,
+        repeat_interval => 'FREQ=DAILY;BYHOUR=0;BYMINUTE=10',
+        enabled         => TRUE
+    );
+END;
+/
+
+-- 예약 시 사용자 escape_history 1 증가 트리거
+CREATE OR REPLACE TRIGGER trg_increase_escape_history
+AFTER UPDATE OF user_id ON reservationschedule
+FOR EACH ROW
+WHEN (OLD.user_id IS NULL AND NEW.user_id IS NOT NULL)
+BEGIN
+    UPDATE users
+    SET escape_history = NVL(escape_history, 0) + 1
+    WHERE user_id = :NEW.user_id;
+END;
+/
+
+-- 시간 슬롯 추가 시 1주일 예약 자동 생성 프로시저
+CREATE OR REPLACE PROCEDURE gen_resv_by_room(p_room_id VARCHAR2) IS
+BEGIN
+    FOR time_row IN (
+        SELECT reservation_time FROM timeslot WHERE room_id = p_room_id
+    ) LOOP
+        FOR i IN 0..6 LOOP
+            INSERT INTO reservationschedule (
+                schedule_id,
+                room_id,
+                reservation_date,
+                reservation_time,
+                headcount,
+                is_reserved
+            ) VALUES (
+                reservationschedule_seq.NEXTVAL,
+                p_room_id,
+                TO_DATE(TO_CHAR(TRUNC(SYSDATE) + i, 'YYYY-MM-DD'), 'YYYY-MM-DD'),  
+                time_row.reservation_time,
+                0,
+                'N'
+            );
+        END LOOP;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+-- 시간 슬롯 추가 시 예약 생성 트리거
+CREATE OR REPLACE TRIGGER trg_gen_resv_timeslot
+AFTER INSERT ON timeslot
+FOR EACH ROW
+BEGIN
+    gen_resv_by_room(:NEW.room_id);
+END;
+/
+
+--삭제시 카운트 차감 트리거
+CREATE OR REPLACE TRIGGER trg_decrease_escape_history
+AFTER UPDATE OF user_id ON reservationschedule
+FOR EACH ROW
+WHEN (OLD.user_id IS NOT NULL AND NEW.user_id IS NULL)
+BEGIN
+    UPDATE users
+    SET escape_history = CASE
+        WHEN escape_history > 0 THEN escape_history - 1
+        ELSE 0
+    END
+    WHERE user_id = :OLD.user_id;
+END;
+/
