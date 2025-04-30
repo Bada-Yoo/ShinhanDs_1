@@ -18,8 +18,22 @@ public class CreatorView {
                 System.out.println("- 방 이름: " + room.getROOM_NAME()
                                  + " | 장르: " + room.getGENRE()
                                  + " | 시놉시스: " + room.getSYNOPSIS());
+                String hope = room.getHOPE_STORE();
+                String status = room.getSTORE_STATUS();
+                if ("대기중".equals(status)) {
+                    System.out.println("※ 현재 매장 배정 상태: 대기중");
+                } else if ("반려".equals(status)) {
+                    System.out.println("※ 현재 매장 배정 상태: 반려됨");
+                }
+        
+                if (hope != null && !hope.isBlank()) {
+                    System.out.println("※ 현재 매장 희망 위치: " + hope);
+                }
             }
-        }
+
+                System.out.println("--------------------------------------------------");
+            }
+        
     }	
     
     public static void displayRooms(List<RoomDTO> rooms) {

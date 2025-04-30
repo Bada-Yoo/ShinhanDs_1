@@ -14,12 +14,11 @@ public class UsersController implements ActivateControllerInterface {
     public void execute() {
     	while(true) {
 	        System.out.println("1. 회원가입 2. 로그인");
-	        int job = sc.nextInt();
-	        sc.nextLine(); // 버퍼 비우기
+	        String job = sc.next();
 	
 	        switch (job) {
-	            case 1 -> join();
-	            case 2 -> login();
+	            case "1" -> join();
+	            case "2" -> login();
 	            default -> UsersView.display("잘못된 입력입니다.");
         	}
         }

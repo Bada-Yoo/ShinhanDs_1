@@ -51,4 +51,29 @@ public class CreatorDAO {
         }
         return result;
     }
+    
+    public CreatorDTO findCreatorById(String id) {
+        CreatorDTO creator = null;
+        conn = DBUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM creator WHERE creator_id = ?";
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, id);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                creator = CreatorDTO.builder()
+                        .CREATOR_ID(rs.getString("creator_id"))
+                        .CREATOR_PW(rs.getString("creator_pw"))
+                        .CREATOR_NICKNAME(rs.getString("creator_nickname"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.dbDisconnect(conn, pst, rs);
+        }
+        return creator;
+    }
+
 }

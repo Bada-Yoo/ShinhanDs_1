@@ -1,7 +1,6 @@
 package com.scape.creator;
 
 import java.util.List;
-
 import com.scape.room.RoomDTO;
 import com.scape.room.RoomService;
 
@@ -14,9 +13,13 @@ public class CreatorService {
         return isSuccess ? "개발자 등록이 완료되었습니다!" : "개발자 등록에 실패했습니다.";
     }
 
-    public boolean loginCreator(String id, String pw) {
-        return creatorDao.checkLogin(id, pw);
+    public CreatorDTO loginAndGetCreator(String id, String pw) {
+        boolean result = creatorDao.checkLogin(id, pw);
+        if (!result) return null;
+
+        return creatorDao.findCreatorById(id);
     }
+
 
     public List<RoomDTO> getMyRooms(String creatorId) {
         return roomService.getRoomsByCreator(creatorId);
@@ -35,6 +38,17 @@ public class CreatorService {
     }
 
     public boolean requestAssignmentByRoomName(String roomName, String creatorId, String hopeStore) {
-        return roomService.requestAssignment(roomName, creatorId, hopeStore);
+        List<RoomDTO> myRooms = roomService.getUnassignedRooms(creatorId);
+        
+        for (RoomDTO room : myRooms) {
+            if (room.getROOM_NAME().equals(roomName)) {
+                return roomService.requestAssignment(room.getROOM_ID(), creatorId, hopeStore);
+            }
+        }
+        return false; 
+    }
+
+    public List<String> getAvailableStoreLocations() {
+        return roomService.getAvailableStoreLocations(); 
     }
 }

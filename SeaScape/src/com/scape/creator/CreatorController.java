@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Scanner;
 import com.scape.activate.ActivateControllerInterface;
 import com.scape.room.RoomDTO;
-import com.scape.room.RoomService;
 
 public class CreatorController implements ActivateControllerInterface {
 
@@ -16,13 +15,13 @@ public class CreatorController implements ActivateControllerInterface {
     public void execute() {
         while (true) {
             System.out.println("1. 개발자 등록(회원가입) 2. 개발자 로그인 0. 나가기");
-            int job = sc.nextInt();
+            String job = sc.next();
             sc.nextLine(); // 버퍼 비우기
 
             switch (job) {
-                case 1 -> register();
-                case 2 -> login();
-                case 0 -> { return; }
+                case "1" -> register();
+                case "2" -> login();
+                case "0" -> { return; }
                 default -> CreatorView.display("잘못된 입력입니다.");
             }
         }
@@ -54,15 +53,16 @@ public class CreatorController implements ActivateControllerInterface {
         System.out.print("비밀번호 입력: ");
         String pw = sc.nextLine();
 
-        boolean success = service.loginCreator(id, pw);
-        if (success) {
-            loginId = id;
-            CreatorView.display("로그인 성공했습니다!");
+        CreatorDTO loggedIn = service.loginAndGetCreator(id, pw);
+        if (loggedIn != null) {
+            loginId = loggedIn.getCREATOR_ID();
+            CreatorView.display(loggedIn.getCREATOR_NICKNAME() + "님 안녕하세요! 로그인 성공했습니다!");
             creatorMenu();
         } else {
             CreatorView.display("로그인 실패! ID 또는 PW를 확인하세요.");
         }
     }
+
 
     private void creatorMenu() {
         while (true) {
@@ -136,13 +136,14 @@ public class CreatorController implements ActivateControllerInterface {
         CreatorView.displayUnassignedRooms(unassignedRooms);
 
         if (unassignedRooms.isEmpty()) {
-            return; // 방이 없으면 조용히 끝
+            return;
         }
 
         System.out.print("배정 요청할 방 이름 입력: ");
         String roomName = sc.nextLine();
 
-        List<String> locations = RoomService.getAvailableStoreLocations();
+        // ✅ CreatorService를 통해 호출
+        List<String> locations = service.getAvailableStoreLocations();
         System.out.println("=== 현재 등록된 매장 위치 목록 ===");
         for (String loc : locations) {
             System.out.println("- " + loc);
@@ -154,6 +155,7 @@ public class CreatorController implements ActivateControllerInterface {
         boolean isSuccess = service.requestAssignmentByRoomName(roomName, loginId, hopeStore);
         CreatorView.display(isSuccess ? "배정 요청 완료!" : "요청 실패 (방 없음 또는 권한 없음)");
     }
+
 
 
 

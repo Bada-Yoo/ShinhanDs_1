@@ -117,7 +117,8 @@ public class RoomDAO {
     //안배정된 방보기
     public List<RoomDTO> findUnassignedRooms(String creatorId) {
         List<RoomDTO> list = new ArrayList<>();
-        String sql = "SELECT room_name, genre, synopsis FROM room WHERE creator_id = ? AND store_unique_id IS NULL";
+        String sql = "SELECT room_id, room_name, genre, synopsis, store_status,hope_store FROM room WHERE creator_id = ? AND store_unique_id IS NULL";
+
         conn = DBUtil.getConnection();
 
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
@@ -126,9 +127,12 @@ public class RoomDAO {
 
             while (rs.next()) {
                 RoomDTO room = RoomDTO.builder()
+                		.HOPE_STORE(rs.getString("hope_store"))
+                		.ROOM_ID(rs.getString("room_id")) 
                         .ROOM_NAME(rs.getString("room_name"))
                         .GENRE(rs.getString("genre"))
                         .SYNOPSIS(rs.getString("synopsis"))
+                        .STORE_STATUS(rs.getString("store_status"))
                         .build();
                 list.add(room);
             }
