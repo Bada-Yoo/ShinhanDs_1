@@ -1,18 +1,24 @@
 package com.scape.users;
 
 public class UsersView {
-    private static boolean firstMessage = true;
 
     public static void display(String message) {
-        if (firstMessage) {
-            System.out.println("[유저 알림] " + message);
-            firstMessage = false;
-        } else {
-            System.out.println(message);
-        }
+        System.out.println(message); // 항상 그대로 출력
     }
 
-    public static void resetMessagePrefix() {
-        firstMessage = true;
+    public static void displayInfo(String message) {
+        System.out.println("[Seascape] ℹ️ " + message);
+    }
+
+    public static void displayError(String message) {
+        System.out.println("[Seascape] ❌ " + message);
+    }
+
+    public static void displaySuccess(String message) {
+        System.out.println("[Seascape] ✅ " + message);
+    }
+
+    public static void displayHighlight(String message) {
+        System.out.println("🌟 " + message);
     }
 }

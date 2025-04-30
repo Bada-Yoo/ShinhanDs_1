@@ -292,6 +292,37 @@ public class RoomDAO {
         }
         return null;
     }
+    //예약방 찾기
+    public List<RoomDTO> findRoomsWithoutTimeSlotButAssignedToStore() {
+        List<RoomDTO> list = new ArrayList<>();
+        String sql = """
+            SELECT * FROM room
+            WHERE store_unique_id IS NOT NULL
+            AND room_id NOT IN (SELECT room_id FROM timeslot)
+        """;
+
+        conn = DBUtil.getConnection();
+        try {
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                RoomDTO room = RoomDTO.builder()
+                        .ROOM_ID(rs.getString("room_id"))
+                        .ROOM_NAME(rs.getString("room_name"))
+                        .LIMIT_TIME(rs.getInt("limit_time"))
+                        .STORE_UNIQUE_ID(rs.getString("store_unique_id"))
+                        .build();
+                list.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.dbDisconnect(conn, pst, rs);
+        }
+        return list;
+    }
+
+
 
 }
 

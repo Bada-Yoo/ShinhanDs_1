@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.scape.activate.DBUtil;
+import com.scape.room.RoomDAO;
 import com.scape.room.RoomDTO;
 
 public class TimeSlotDAO {
@@ -59,5 +60,11 @@ public class TimeSlotDAO {
             DBUtil.dbDisconnect(conn, pst, rs);
         }
         return list;
+        
     }
+    public List<RoomDTO> findRoomsWithoutTimeSlotAndAssignedStore() {
+        return new RoomDAO().findRoomsWithoutTimeSlotButAssignedToStore();
+    }
+
+
 }

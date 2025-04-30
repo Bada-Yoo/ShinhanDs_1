@@ -2,6 +2,7 @@ package com.scape.timeslot;
 
 import java.util.List;
 
+import com.scape.room.RoomDAO;
 import com.scape.room.RoomDTO;
 
 public class TimeSlotService {
@@ -17,6 +18,8 @@ public class TimeSlotService {
     }
 
     public List<RoomDTO> getRoomsWithoutTimeSlot() {
-        return dao.findRoomsWithoutTimeSlot();
+        return dao.findRoomsWithoutTimeSlotAndAssignedStore();
     }
+
+
 }

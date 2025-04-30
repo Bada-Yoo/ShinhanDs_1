@@ -26,7 +26,11 @@ public class UsersController implements ActivateControllerInterface {
     @Override
     public void execute() {
     	while(true) {
-	        System.out.println("1. 회원가입 2. 로그인 0. 나가기");
+            System.out.println("+------------------------------------------+");
+            System.out.println("|             👤 유저 모드 진입 중...          |");
+            System.out.println("+------------------------------------------+");
+	        System.out.println("1. 📚 회원가입     2. 🔐 로그인     0. 🚪 나가기");
+	        System.out.print("\n👉 입력: ");
 	        String job = sc.next();
 	
 	        switch (job) {
@@ -97,9 +101,13 @@ public class UsersController implements ActivateControllerInterface {
 
     private void userMenu() {
         while (true) {
-        	
-            System.out.println("=== 유저 메뉴 ===");
-            System.out.println("1. 예약하기 2. 예약취소 3. 계정삭제 4. 가맹점 문의 5. 로그아웃");
+        	System.out.println("\n+-------------------------------------------+");
+            System.out.println("|               👥 유저 메뉴                   |");
+            System.out.println("+--------------------------------------------+");
+            System.out.println(" 1. 📝 예약하기     2. ❌ 예약취소");
+            System.out.println(" 3. 👤 계정삭제     4. 👥 가맹점 문의");
+            System.out.println(" 5. 🚪 로그아웃");
+            System.out.print("\n👉 선택: ");
             int menu = sc.nextInt();
             sc.nextLine();
 
