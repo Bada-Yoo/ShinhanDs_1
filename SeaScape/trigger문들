@@ -151,3 +151,18 @@ BEGIN
     gen_resv_by_room(:NEW.room_id);
 END;
 /
+
+--삭제시 카운트 차감 트리거
+CREATE OR REPLACE TRIGGER trg_decrease_escape_history
+AFTER UPDATE OF user_id ON reservationschedule
+FOR EACH ROW
+WHEN (OLD.user_id IS NOT NULL AND NEW.user_id IS NULL)
+BEGIN
+    UPDATE users
+    SET escape_history = CASE
+        WHEN escape_history > 0 THEN escape_history - 1
+        ELSE 0
+    END
+    WHERE user_id = :OLD.user_id;
+END;
+/
