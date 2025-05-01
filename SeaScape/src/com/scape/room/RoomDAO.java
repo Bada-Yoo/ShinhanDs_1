@@ -20,9 +20,6 @@ public class RoomDAO {
             "INSERT INTO room (creator_id, room_name, genre, is_19, price, limit_time, synopsis) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-    private static final String DELETE_ROOM =
-        "DELETE FROM room WHERE room_id = ? AND creator_id = ?";
-
     private static final String FIND_ROOM =
         "SELECT * FROM room WHERE creator_id = ?";
 

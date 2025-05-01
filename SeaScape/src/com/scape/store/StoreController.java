@@ -4,7 +4,6 @@ import com.scape.activate.ActivateControllerInterface;
 import com.scape.ReservationSchedule.ReservationScheduleDTO;
 import com.scape.ReservationSchedule.ReservationScheduleService;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;

@@ -2,7 +2,6 @@ package com.scape.timeslot;
 
 import java.util.List;
 
-import com.scape.room.RoomDAO;
 import com.scape.room.RoomDTO;
 
 public class TimeSlotService {
