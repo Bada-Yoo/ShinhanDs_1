@@ -1,8 +1,8 @@
 // BossController.java
 package com.scape.boss;
 
-import com.scape.activate.ActivateControllerInterface;
 import com.scape.timeslot.TimeSlotService;
+import com.scape.activate.ActivateControllerInterface;
 import com.scape.room.RoomDTO;
 import com.scape.room.RoomService;
 import com.scape.store.StoreService;

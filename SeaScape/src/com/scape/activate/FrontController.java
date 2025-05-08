@@ -2,6 +2,8 @@ package com.scape.activate;
 
 import java.util.Scanner;
 
+import com.scape.activate.ActivateControllerInterface;
+
 public class FrontController {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);				

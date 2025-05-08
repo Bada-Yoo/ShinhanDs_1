@@ -1,5 +1,6 @@
 package com.scape.activate;
 
+import com.scape.activate.ActivateControllerInterface;
 import com.scape.boss.BossController;
 import com.scape.creator.CreatorController;
 import com.scape.store.StoreController;

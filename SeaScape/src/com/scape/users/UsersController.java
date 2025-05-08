@@ -1,6 +1,7 @@
 package com.scape.users;
 
 import com.scape.room.RoomDTO;
+import com.scape.activate.ActivateControllerInterface;
 import com.scape.ReservationSchedule.ReservationScheduleDTO;
 import com.scape.ReservationSchedule.ReservationScheduleService;
 import com.scape.store.StoreService;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import com.scape.activate.ActivateControllerInterface;
 
 public class UsersController implements ActivateControllerInterface {
 

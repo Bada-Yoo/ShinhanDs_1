@@ -10,14 +10,17 @@ import com.scape.activate.DBUtil;
 public class CreatorDAO {
     Connection conn;
     PreparedStatement pst;
+    static final String INSERT_CREATOR = "INSERT INTO creator (creator_id, creator_pw, creator_nickname) VALUES (?, ?, ?)";
+    static final String LOGIN_CREATOR = "SELECT * FROM creator WHERE creator_id = ? AND creator_pw = ?";
+    static final String FIND_CREATOR = "SELECT * FROM creator WHERE creator_id = ?";
+    
     ResultSet rs;
 
     public boolean insertCreator(CreatorDTO creator) {
         boolean result = false;
         conn = DBUtil.getConnection();
         try {
-            String sql = "INSERT INTO creator (creator_id, creator_pw, creator_nickname) VALUES (?, ?, ?)";
-            pst = conn.prepareStatement(sql);
+            pst= conn.prepareStatement(INSERT_CREATOR);
             pst.setString(1, creator.getCREATOR_ID());
             pst.setString(2, creator.getCREATOR_PW());
             pst.setString(3, creator.getCREATOR_NICKNAME());
@@ -38,8 +41,7 @@ public class CreatorDAO {
         boolean result = false;
         conn = DBUtil.getConnection();
         try {
-            String sql = "SELECT * FROM creator WHERE creator_id = ? AND creator_pw = ?";
-            pst = conn.prepareStatement(sql);
+        	pst= conn.prepareStatement(LOGIN_CREATOR);
             pst.setString(1, id);
             pst.setString(2, pw);
             rs = pst.executeQuery();
@@ -56,8 +58,7 @@ public class CreatorDAO {
         CreatorDTO creator = null;
         conn = DBUtil.getConnection();
         try {
-            String sql = "SELECT * FROM creator WHERE creator_id = ?";
-            pst = conn.prepareStatement(sql);
+            pst = conn.prepareStatement(FIND_CREATOR);
             pst.setString(1, id);
             rs = pst.executeQuery();
 
