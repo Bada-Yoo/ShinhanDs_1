@@ -31,7 +31,7 @@ public class BossController implements ActivateControllerInterface {
 
         while (true) {
             System.out.println("\n+------------------------------------------+");
-            System.out.println("|             🧑‍💼 관리자 메뉴 진입             |");
+            System.out.println("|             🧑‍💼 관리자 메뉴 진입              |");
             System.out.println("+------------------------------------------+");
             System.out.println("1. 📮 가맹점 문의 신청서 확인");
             System.out.println("2. 🏘️ 방탈출 입점 신청서 검토");
